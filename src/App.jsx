@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DonutChart from 'react-donut-chart';
 
-import Body from './Body';
+import Body from './components/Body';
 
 function Donut() {
 
