@@ -2,9 +2,15 @@ import React, { useRef, useState } from "react";
 import Header from "./Header";
 import BG from "../utils/images/Netflix_BG.jpg";
 import { checkValidDate } from "../utils/validate";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../utils/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+
 const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
   const [errorMessage,setErrorMessage] = useState(null)
+  const navigate = useNavigate()
 
   const email = useRef(null);
   const password = useRef(null);
@@ -17,9 +23,43 @@ const Login = () => {
   const handlerButtonClick = () => {
   const message = checkValidDate(name.current.value,email.current.value, password.current.value,);
   setErrorMessage(message)
-    
-  }
+    if(message)return;
+    if(!isSignIn){
+      //sign up logic
+      createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+      .then((userCredential) => {
+        // Signed up 
+        const user = userCredential.user;
+        navigate('/browse')
 
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setErrorMessage(errorCode + "-" + errorMessage)
+        // ..
+      });
+
+
+    }
+    else {
+// sign in logic
+signInWithEmailAndPassword(auth,email.current.value, password.current.value)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    navigate('/browse')
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    setErrorMessage(errorCode +"-"+ errorMessage)
+  });
+    }
+  }
+ 
   return (
     <div className="flex justify-center">
       <div className=" absolute ">
